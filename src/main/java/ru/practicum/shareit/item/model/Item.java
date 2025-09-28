@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.model;
 
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

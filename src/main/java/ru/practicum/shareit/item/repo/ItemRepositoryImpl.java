@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.repo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
