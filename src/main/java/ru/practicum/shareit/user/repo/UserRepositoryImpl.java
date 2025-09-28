@@ -33,12 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User createUser(User user) {
-        var isNotUniqueEmail = users.values().stream()
-                .map(User::getEmail)
-                .anyMatch(email -> Strings.CI.equals(email, user.getEmail()));
-        if (isNotUniqueEmail) {
-            throw new DuplicateEmailException("User with email %s already exists".formatted(user.getEmail()));
-        }
+        checkUniqueEmail(user.getEmail());
         var userId = userCounter.incrementAndGet();
         user.setId(userId);
         users.put(userId, user);
@@ -48,6 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User updateUser(Long id, User user) {
+        checkUniqueEmail(user.getEmail());
         users.put(id, user);
         return user;
     }
@@ -56,5 +52,14 @@ public class UserRepositoryImpl implements UserRepository {
     public void deleteUser(Long id) {
         getUserById(id);
         users.remove(id);
+    }
+
+    private void checkUniqueEmail(String emailToCheck) {
+        var isNotUniqueEmail = users.values().stream()
+                .map(User::getEmail)
+                .anyMatch(email -> Strings.CS.equals(email, emailToCheck));
+        if (isNotUniqueEmail) {
+            throw new DuplicateEmailException("User with email %s already exists".formatted(emailToCheck));
+        }
     }
 }
