@@ -1,6 +1,8 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.dto;
 
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +15,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserDto {
+
     Long id;
     String name;
-    String description;
-    Boolean available;
-    long owner;
+    @Email
+    @NotNull
+    String email;
 }
