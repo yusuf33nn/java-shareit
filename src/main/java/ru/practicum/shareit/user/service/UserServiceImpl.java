@@ -33,9 +33,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
-//        if (id == null) {
-//            return createUser(userDto);
-//        }
         User user = UserMapper.toEntity(userDto);
         user.setId(id);
         return UserMapper.toDto(userRepository.updateUser(id, user));
