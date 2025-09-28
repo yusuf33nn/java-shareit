@@ -35,7 +35,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User createUser(User user) {
         var isNotUniqueEmail = users.values().stream()
                 .map(User::getEmail)
-                .anyMatch(email -> Strings.CS.equals(email, user.getEmail()));
+                .anyMatch(email -> Strings.CI.equals(email, user.getEmail()));
         if (isNotUniqueEmail) {
             throw new DuplicateEmailException("User with email %s already exists".formatted(user.getEmail()));
         }
