@@ -19,25 +19,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
+    private final ItemMapper itemMapper;
     private final UserService userService;
     private final ItemRepository itemRepository;
 
     @Override
     public ItemDto getItemById(Long itemId) {
-        return ItemMapper.toDto(itemRepository.getItemById(itemId));
+        return itemMapper.toDto(itemRepository.getItemById(itemId));
     }
 
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        return ItemMapper.toDtoList(itemRepository.getAllItems(userId));
+        return itemMapper.toDtoList(itemRepository.getAllItems(userId));
     }
 
     @Override
     public ItemDto createItem(Long userId, ItemCreateDto itemCreateDto) {
         userService.getUserById(userId);
-        Item item = ItemMapper.toCreateEntity(itemCreateDto);
+        Item item = itemMapper.toCreateEntity(itemCreateDto);
         item.setOwner(userId);
-        return ItemMapper.toDto(itemRepository.createItem(item));
+        return itemMapper.toDto(itemRepository.createItem(item));
     }
 
     @Override
@@ -46,9 +47,9 @@ public class ItemServiceImpl implements ItemService {
         if (itemFromDb.getOwner() != userId) {
             throw new NotFoundException("Only owner can update item");
         }
-        var item = ItemMapper.toUpdateEntity(itemUpdateDto);
+        var item = itemMapper.toUpdateEntity(itemUpdateDto);
         item.setId(itemId);
-        return ItemMapper.toDto(itemRepository.updateItem(item));
+        return itemMapper.toDto(itemRepository.updateItem(item));
     }
 
     @Override
@@ -56,6 +57,6 @@ public class ItemServiceImpl implements ItemService {
         if (StringUtils.isBlank(text)) {
             return Collections.emptyList();
         }
-        return ItemMapper.toDtoList(itemRepository.searchItems(text));
+        return itemMapper.toDtoList(itemRepository.searchItems(text));
     }
 }

@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import java.util.List;
 
+import static ru.practicum.shareit.utils.Constants.USER_HEADER;
+
 @RequestMapping(path = "/items")
 public interface ItemApi {
 
@@ -24,14 +26,14 @@ public interface ItemApi {
     ResponseEntity<ItemDto> getItemById(@NotNull @PathVariable("itemId") Long itemId);
 
     @GetMapping
-    ResponseEntity<List<ItemDto>> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId);
+    ResponseEntity<List<ItemDto>> getAllItems(@RequestHeader(USER_HEADER) Long userId);
 
     @PostMapping
-    ResponseEntity<ItemDto> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    ResponseEntity<ItemDto> createItem(@RequestHeader(USER_HEADER) Long userId,
                                        @Valid @RequestBody ItemCreateDto itemCreateDto);
 
     @PatchMapping("/{itemId}")
-    ResponseEntity<ItemDto> updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    ResponseEntity<ItemDto> updateItem(@RequestHeader(USER_HEADER) Long userId,
                                        @PathVariable("itemId") Long itemId,
                                        @RequestBody ItemUpdateDto itemUpdateDto);
 
