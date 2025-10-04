@@ -10,12 +10,32 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorMessage> handleIllegalState(IllegalStateException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorMessage.builder()
+                        .httpCode(HttpStatus.BAD_REQUEST.value())
+                        .errorMessage(ex.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ErrorMessage> handleDuplicateEmail(DuplicateEmailException ex) {
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorMessage.builder()
                         .httpCode(HttpStatus.CONFLICT.value())
+                        .errorMessage(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(BusinessLogicException.class)
+    public ResponseEntity<ErrorMessage> handleBusinessLogic(BusinessLogicException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorMessage.builder()
+                        .httpCode(HttpStatus.BAD_REQUEST.value())
                         .errorMessage(ex.getMessage())
                         .build());
     }
