@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface UserApi {
     ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto);
 
     @PatchMapping("/{id}")
-    ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody UserDto userDto);
+    ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDto userDto);
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteUser(@PathVariable("id") Long id);

@@ -5,13 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequiredArgsConstructor
 public class UserController implements UserApi {
@@ -35,7 +33,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<UserDto> updateUser(Long id, UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(Long id, UserUpdateDto userDto) {
         return ResponseEntity.ok(userService.updateUser(id, userDto));
     }
 
