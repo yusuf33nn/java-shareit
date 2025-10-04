@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,31 +26,33 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(Long itemId) {
-        return itemMapper.toDto(itemRepository.getItemById(itemId));
+        var item = findItemById(itemId);
+        return itemMapper.toDto(item);
     }
 
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        return itemMapper.toDtoList(itemRepository.getAllItems(userId));
+        return itemMapper.toDtoList(itemRepository.findAllByOwnerId(userId));
     }
 
     @Override
     public ItemDto createItem(Long userId, ItemCreateDto itemCreateDto) {
-        userService.getUserById(userId);
+        var owner = userService.findByUserId(userId);
         Item item = itemMapper.toCreateEntity(itemCreateDto);
-        item.setOwner(userId);
-        return itemMapper.toDto(itemRepository.createItem(item));
+        item.setOwner(owner);
+        return itemMapper.toDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemUpdateDto itemUpdateDto) {
-        var itemFromDb = itemRepository.getItemById(itemId);
-        if (itemFromDb.getOwner() != userId) {
+        var itemFromDb = findItemById(itemId);
+        if (!Objects.equals(itemFromDb.getOwner().getId(), userId)) {
             throw new NotFoundException("Only owner can update item");
         }
-        var item = itemMapper.toUpdateEntity(itemUpdateDto);
-        item.setId(itemId);
-        return itemMapper.toDto(itemRepository.updateItem(item));
+        if (itemUpdateDto.getName() != null) itemFromDb.setName(itemUpdateDto.getName());
+        if (itemUpdateDto.getDescription() != null) itemFromDb.setDescription(itemUpdateDto.getDescription());
+        if (itemUpdateDto.getAvailable() != null) itemFromDb.setAvailable(itemUpdateDto.getAvailable());
+        return itemMapper.toDto(itemRepository.save(itemFromDb));
     }
 
     @Override
@@ -57,6 +60,15 @@ public class ItemServiceImpl implements ItemService {
         if (StringUtils.isBlank(text)) {
             return Collections.emptyList();
         }
-        return itemMapper.toDtoList(itemRepository.searchItems(text));
+        var searchedItems = itemRepository.searchItemsByNameIgnoreCaseOrDescriptionIgnoreCase(text, text)
+                .stream()
+                .filter(Item::getAvailable)
+                .toList();
+        return itemMapper.toDtoList(searchedItems);
+    }
+
+    private Item findItemById(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Item with id %d not found".formatted(itemId)));
     }
 }
