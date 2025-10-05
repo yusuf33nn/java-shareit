@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -9,8 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,32 +15,34 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "items")
+@Table(name = "comments")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "name")
-    String name;
-    @Column(name = "description")
-    String description;
-    @Column(name = "is_available")
-    Boolean available;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id")
-    User owner;
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("created DESC")
-    List<Comment> comments;
+    @JoinColumn(name = "item_id")
+    Item item;
+
+    String text;
+
+    String authorName;
+
+    LocalDateTime created;
+
+    @PrePersist
+    void prePersist() {
+        if (created == null) created = LocalDateTime.now();
+    }
 }

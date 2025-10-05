@@ -108,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             bookingStatesForSearch = List.of(state);
         }
-        var result = bookingRepository.getAllByBooker_IdAndStateIsIn(bookerId, bookingStatesForSearch);
+        var result = bookingRepository.getAllByBookerIdAndStateIsIn(bookerId, bookingStatesForSearch);
         return bookingMapper.toDtoList(result);
     }
 

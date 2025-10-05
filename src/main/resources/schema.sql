@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS items cascade;
+DROP TABLE IF EXISTS comments cascade;
 DROP TABLE IF EXISTS bookings cascade;
 DROP TABLE IF EXISTS users cascade;
 
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS items
     name         varchar(255) not null,
     description  varchar(255) not null,
     is_available boolean      not null,
-    owner_id      bigint references users (id)
+    owner_id     bigint references users (id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings
@@ -29,4 +30,13 @@ CREATE TABLE IF NOT EXISTS bookings
     end_date   timestamp   not null,
     created_at timestamp   not null default now(),
     updated_at timestamp
+);
+
+CREATE TABLE IF NOT EXISTS comments
+(
+    id          bigint generated always as identity primary key,
+    item_id     bigint       not null references items (id),
+    text        text         not null,
+    author_name varchar(255) not null,
+    created     timestamp    not null default now()
 );

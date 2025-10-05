@@ -13,7 +13,9 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> getAllByBooker_IdAndStateIsIn(Long bookerId, List<BookingState> bookingStates);
+    List<Booking> getAllByBookerIdAndStateIsIn(Long bookerId, List<BookingState> bookingStates);
+
+    List<Booking> getAllByItemIdAndStateIn(Long itemId, List<BookingState> bookingStates);
 
     @Query("""
               select b

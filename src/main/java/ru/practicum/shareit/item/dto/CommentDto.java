@@ -7,17 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDto {
+public class CommentDto {
+
     Long id;
-    String name;
-    String description;
-    Boolean available;
-    List<CommentDto> comments;
+
+    String text;
+
+    String authorName;
+
+    LocalDateTime created;
 }
