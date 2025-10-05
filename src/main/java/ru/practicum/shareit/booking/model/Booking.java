@@ -53,7 +53,7 @@ public class Booking {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 }
