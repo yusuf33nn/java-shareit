@@ -40,6 +40,16 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(ApproveModificationException.class)
+    public ResponseEntity<ErrorMessage> handleApproveModification(ApproveModificationException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ErrorMessage.builder()
+                        .httpCode(HttpStatus.FORBIDDEN.value())
+                        .errorMessage(ex.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException ex) {
         log.error(ex.getMessage(), ex);
