@@ -13,7 +13,15 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> getAllByBookerIdAndStateIsIn(Long bookerId, List<BookingState> bookingStates);
+    @Query("""
+              select b
+              from Booking b
+              join fetch b.booker boo
+              where boo.id = :bookerId
+                and b.state in :states
+            """)
+    List<Booking> getAllByBookerIdAndStateIsIn(@Param("bookerId") Long bookerId,
+                                               @Param("states") Collection<BookingState> states);
 
     List<Booking> getAllByItemIdAndStateIn(Long itemId, List<BookingState> bookingStates);
 
