@@ -28,16 +28,24 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
     private final BookingRepository bookingRepository;
 
+    private static final List<BookingState> BOOKING_STATES_FOR_SEARCH =
+            List.of(BookingState.APPROVED, BookingState.REJECTED,
+                    BookingState.WAITING, BookingState.CURRENT,
+                    BookingState.PAST, BookingState.FUTURE);
+
     @Override
     @Transactional
     public BookingDto bookItem(Long bookerId, BookingCreateDto bookingDto) {
+        validateBookingDates(bookingDto);
         var booker = userService.findByUserId(bookerId);
         var item = itemService.findItemById(bookingDto.getItemId());
-
         if (!item.getAvailable()) {
             throw new IllegalStateException("Item with id %d is not available".formatted(item.getId()));
         }
-        validateBookingDates(bookingDto);
+
+        List<Booking> currentAndComingItemBookings = bookingRepository.findAllByItemIdAndStateInOrderByStart(item.getId(),
+                List.of(BookingState.CURRENT, BookingState.FUTURE));
+        validateBookingCrossingDates(currentAndComingItemBookings, bookingDto);
 
         Booking booking = Booking.builder()
                 .state(BookingState.WAITING)
@@ -65,17 +73,31 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException("Start date is equal end date");
         }
 
-        if (bookingDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Start date is in the past");
+        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Start date or end date is in the past");
         }
+    }
 
-        if (bookingDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("End date is in the past");
+    private void validateBookingCrossingDates(List<Booking> currentAndComingItemBookings, BookingCreateDto bookingDto) {
+        if (!currentAndComingItemBookings.isEmpty()) {
+            var isCrossingOtherBookings = currentAndComingItemBookings.stream()
+                    .anyMatch(booking -> {
+                        var isInsideAnotherBooking = bookingDto.getStart().isAfter(booking.getStart())
+                                && booking.getEnd().isBefore(booking.getEnd());
+                        var isOutsideAnotherBooking = bookingDto.getStart().isBefore(booking.getStart())
+                                && bookingDto.getEnd().isAfter(booking.getEnd());
+                        return isInsideAnotherBooking || isOutsideAnotherBooking;
+                    });
+            if (isCrossingOtherBookings) {
+                throw new BusinessLogicException("Crossing booking is not available");
+            }
         }
     }
 
     @Override
+    @Transactional
     public BookingDto approveBooking(Long ownerId, Long bookingId, boolean approved) {
+        userService.findByUserId(ownerId);
         var booking = findBookingById(bookingId);
         if (!booking.getItem().getOwner().getId().equals(ownerId)) {
             throw new BusinessLogicException("Only owner can approve booking");
@@ -87,11 +109,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBookingInfo(Long userId, Long bookingId) {
+        userService.findByUserId(userId);
         var booking = findBookingById(bookingId);
-        log.info("User ID: {}", userId);
-        log.info("Booking ID: {}", bookingId);
-        log.info("OwnerID: {}", booking.getItem().getOwner().getId());
-        log.info("BookerID: {}", booking.getBooker().getId());
         if (!booking.getItem().getOwner().getId().equals(userId) && !booking.getBooker().getId().equals(userId)) {
             throw new BusinessLogicException("Only owner or booker can get booking info");
         }
@@ -99,30 +118,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getBookerAllBookingsByState(Long bookerId, BookingState state) {
         userService.findByUserId(bookerId);
-        List<BookingState> bookingStatesForSearch;
-        if (state == BookingState.ALL) {
-            bookingStatesForSearch = List.of(BookingState.APPROVED, BookingState.REJECTED,
-                    BookingState.WAITING, BookingState.CURRENT, BookingState.PAST, BookingState.FUTURE);
-        } else {
-            bookingStatesForSearch = List.of(state);
-        }
+        List<BookingState> bookingStatesForSearch = chooseBookingStatesForSearch(state);
         var result = bookingRepository.getAllByBookerIdAndStateIsIn(bookerId, bookingStatesForSearch);
         return bookingMapper.toDtoList(result);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getOwnerAllBookingsByState(Long ownerId, BookingState state) {
         userService.findByUserId(ownerId);
-        List<BookingState> bookingStatesForSearch;
-        if (state == BookingState.ALL) {
-            bookingStatesForSearch = List.of(BookingState.APPROVED, BookingState.REJECTED,
-                    BookingState.WAITING, BookingState.CURRENT, BookingState.PAST, BookingState.FUTURE);
-        } else {
-            bookingStatesForSearch = List.of(state);
-        }
+        List<BookingState> bookingStatesForSearch = chooseBookingStatesForSearch(state);
+
         var result = bookingRepository.findAllByOwnerIdAndStateIn(ownerId, bookingStatesForSearch);
         return bookingMapper.toDtoList(result);
+    }
+
+    private List<BookingState> chooseBookingStatesForSearch(BookingState state) {
+        return state == BookingState.ALL ? BOOKING_STATES_FOR_SEARCH : List.of(state);
     }
 }

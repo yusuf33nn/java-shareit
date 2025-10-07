@@ -27,4 +27,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             """)
     List<Booking> findAllByOwnerIdAndStateIn(@Param("ownerId") Long ownerId,
                                              @Param("states") Collection<BookingState> states);
+
+    List<Booking> findAllByItemIdAndStateInOrderByStart(Long itemId, List<BookingState> bookingStates);
 }

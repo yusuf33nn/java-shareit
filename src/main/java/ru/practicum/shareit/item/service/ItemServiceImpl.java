@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -42,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public ItemWithBookingsDto getItemById(Long itemId) {
         var item = findItemById(itemId);
         var result =
@@ -66,11 +68,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> getAllItems(Long userId) {
+        userService.findByUserId(userId);
         return itemMapper.toDtoList(itemRepository.findAllByOwnerId(userId));
     }
 
     @Override
+    @Transactional
     public ItemDto createItem(Long userId, ItemCreateDto itemCreateDto) {
         var owner = userService.findByUserId(userId);
         Item item = itemMapper.toCreateEntity(itemCreateDto);
@@ -79,7 +84,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(Long userId, Long itemId, ItemUpdateDto itemUpdateDto) {
+        userService.findByUserId(userId);
         var itemFromDb = findItemById(itemId);
         if (!Objects.equals(itemFromDb.getOwner().getId(), userId)) {
             throw new NotFoundException("Only owner can update item");
@@ -91,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto commentItem(Long userId, Long itemId, CommentCreateDto commentCreateDto) {
         var user = userService.findByUserId(userId);
         var item = findItemById(itemId);
