@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.repo.BookingRepository;
+import ru.practicum.shareit.exception.ApproveModificationException;
 import ru.practicum.shareit.exception.BusinessLogicException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.service.ItemService;
@@ -97,10 +98,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto approveBooking(Long ownerId, Long bookingId, boolean approved) {
-        userService.findByUserId(ownerId);
+        try {
+            userService.findByUserId(ownerId);
+        } catch (NotFoundException ignored) { }
         var booking = findBookingById(bookingId);
         if (!booking.getItem().getOwner().getId().equals(ownerId)) {
-            throw new BusinessLogicException("Only owner can approve booking");
+            throw new ApproveModificationException("Only owner can approve booking");
         }
         booking.setState(approved ? BookingState.APPROVED : BookingState.REJECTED);
         booking.setUpdatedAt(LocalDateTime.now());

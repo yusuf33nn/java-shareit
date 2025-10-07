@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         var user = userService.findByUserId(userId);
         var item = findItemById(itemId);
         var result = bookingRepository.getAllByBookerIdAndStateIsIn(userId,
-                List.of(BookingState.PAST));
+                List.of(BookingState.PAST, BookingState.CURRENT, BookingState.APPROVED));
         if (result.isEmpty()) {
             throw new BusinessLogicException("You can't comment item if you didn't book it");
         }
