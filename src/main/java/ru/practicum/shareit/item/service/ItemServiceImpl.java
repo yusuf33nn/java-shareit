@@ -24,6 +24,7 @@ import ru.practicum.shareit.item.repo.CommentRepository;
 import ru.practicum.shareit.item.repo.ItemRepository;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -102,8 +103,10 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto commentItem(Long userId, Long itemId, CommentCreateDto commentCreateDto) {
         var user = userService.findByUserId(userId);
         var item = findItemById(itemId);
-        var result = bookingRepository.getAllByBookerIdAndStateIsIn(userId,
-                List.of(BookingState.PAST, BookingState.CURRENT));
+        var result = bookingRepository.findAllByBookerId(userId)
+                .stream()
+                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                .toList();
         if (result.isEmpty()) {
             throw new BusinessLogicException("You can't comment item if you didn't book it");
         }
