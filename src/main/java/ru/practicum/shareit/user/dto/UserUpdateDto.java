@@ -1,5 +1,7 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,17 +9,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDto {
-    Long id;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserUpdateDto {
+
     String name;
-    String description;
-    Boolean available;
-    List<CommentDto> comments;
+    @Email
+    String email;
 }
