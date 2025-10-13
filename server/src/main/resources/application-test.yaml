@@ -17,7 +17,7 @@ spring:
         format_sql: true
   datasource:
     url: jdbc:h2:file:./db/share-it
-    username: sa
+    username: username
     password: password
     driver-class-name: org.h2.Driver
 
