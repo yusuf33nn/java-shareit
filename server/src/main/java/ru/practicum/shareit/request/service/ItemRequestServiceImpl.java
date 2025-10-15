@@ -1,7 +1,9 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.request.ItemRequestMapper;
@@ -11,8 +13,10 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repo.ItemRequestRepository;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
@@ -24,9 +28,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDto createItemRequest(Long userId, ItemRequestCreateDto createDto) {
-        userService.findByUserId(userId);
+        var requestor = userService.findByUserId(userId);
         var itemRequest = ItemRequest.builder()
                 .description(createDto.getDescription())
+                .requestor(requestor)
                 .build();
         return itemRequestMapper.toDto(itemRequestRepository.save(itemRequest));
     }
@@ -37,22 +42,32 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemRequestDto getItemRequestById(Long userId, Long requestId) {
         userService.findByUserId(userId);
         var itemRequest = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NullPointerException("Item request with id %d not found".formatted(requestId)));
-        var responseDto = itemRequestMapper.toDto(itemRequest);
-
-        return null;
+        return itemRequestMapper.toDto(itemRequest);
     }
 
     @Override
-    public Page<ItemRequestDto> getUsersItemRequests(Long userId, int page, int size) {
-        return null;
+    @Transactional(readOnly = true)
+    public List<ItemRequestDto> getUsersItemRequests(Long userId, int page, int size) {
+        userService.findByUserId(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        return itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId, pageable)
+                .map(itemRequestMapper::toDto)
+                .stream().toList();
     }
 
     @Override
-    public Page<ItemRequestDto> getOthersItemRequests(Long userId, int page, int size) {
-        return null;
+    @Transactional(readOnly = true)
+    public List<ItemRequestDto> getOthersItemRequests(Long userId, int page, int size) {
+        userService.findByUserId(userId);
+        Pageable pageable = PageRequest.of(page, size);
+
+        return itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable)
+                .map(itemRequestMapper::toDto)
+                .stream().toList();
     }
 }

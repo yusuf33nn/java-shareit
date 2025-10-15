@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -41,6 +42,7 @@ public class ItemRequest {
     User requestor;
     @OneToMany(mappedBy = "itemRequest", orphanRemoval = true)
     List<Item> items;
-    @Column(name = "created", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created", updatable = false)
     LocalDateTime created;
 }

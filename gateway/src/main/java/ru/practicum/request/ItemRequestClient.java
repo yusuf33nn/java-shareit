@@ -11,6 +11,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.BaseClient;
 import ru.practicum.request.dto.ItemRequestCreateDto;
 
+import java.util.Map;
+
 @Service
 public class ItemRequestClient extends BaseClient {
 
@@ -33,5 +35,21 @@ public class ItemRequestClient extends BaseClient {
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getItemRequestById(Long userId, Long requestId) {
         return get("/" + requestId, userId);
+    }
+
+    public ResponseEntity<Object> getUsersItemRequests(Long userId, Integer page, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                "page", page,
+                "size", size
+        );
+        return get("?page={page}&size={size}", userId, parameters);
+    }
+
+    public ResponseEntity<Object> getOthersItemRequests(Long userId, Integer page, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                "page", page,
+                "size", size
+        );
+        return get("/all?page={page}&size={size}", userId, parameters);
     }
 }

@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+
+import java.util.List;
 
 import static ru.practicum.shareit.utils.Constants.USER_HEADER;
 
@@ -29,13 +30,13 @@ public interface ItemRequestApi {
                                                       @PathVariable("requestId") Long requestId);
 
     @GetMapping
-    ResponseEntity<Page<ItemRequestDto>> getUsersItemRequests(@RequestHeader(USER_HEADER) Long userId,
+    ResponseEntity<List<ItemRequestDto>> getUsersItemRequests(@RequestHeader(USER_HEADER) Long userId,
                                                               @RequestParam(defaultValue = "0") @Min(0) int page,
-                                                              @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
+                                                              @RequestParam(defaultValue = "10") @Min(1) @Max(20) int size);
 
 
     @GetMapping("/all")
-    ResponseEntity<Page<ItemRequestDto>> getOthersItemRequests(@RequestHeader(USER_HEADER) Long userId,
+    ResponseEntity<List<ItemRequestDto>> getOthersItemRequests(@RequestHeader(USER_HEADER) Long userId,
                                                                @RequestParam(defaultValue = "0") @Min(0) int page,
-                                                               @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
+                                                               @RequestParam(defaultValue = "10") @Min(1) @Max(20) int size);
 }
