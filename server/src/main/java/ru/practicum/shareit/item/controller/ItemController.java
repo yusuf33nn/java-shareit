@@ -13,8 +13,6 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class ItemController implements ItemApi {

@@ -9,8 +9,6 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.List;
-
 public interface ItemService {
 
     ItemWithBookingsDto getItemById(Long itemId);
@@ -26,6 +24,4 @@ public interface ItemService {
     CommentDto commentItem(Long userId, Long itemId, CommentCreateDto commentCreateDto);
 
     Page<ItemDto> searchItems(String text, int page, int size);
-
-//    List<ItemDto> findAllByRequestId(Long requestId);
 }

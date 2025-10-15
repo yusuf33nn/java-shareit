@@ -12,6 +12,7 @@ public interface ItemRequestService {
     ItemRequestDto createItemRequest(Long userId, ItemRequestCreateDto createDto);
 
     Optional<ItemRequest> findItemRequestById(Long requestId);
+
     ItemRequestDto getItemRequestById(Long userId, Long requestId);
 
     Page<ItemRequestDto> getUsersItemRequests(Long userId, int page, int size);

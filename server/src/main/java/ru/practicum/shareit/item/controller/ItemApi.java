@@ -21,8 +21,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
 
-import java.util.List;
-
 import static ru.practicum.shareit.utils.Constants.USER_HEADER;
 
 @RequestMapping(path = "/items")

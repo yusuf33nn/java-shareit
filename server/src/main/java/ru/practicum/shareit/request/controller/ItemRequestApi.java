@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
-import java.util.List;
-
 import static ru.practicum.shareit.utils.Constants.USER_HEADER;
 
 @RequestMapping(path = "/requests")
@@ -28,7 +26,7 @@ public interface ItemRequestApi {
 
     @GetMapping("/{requestId}")
     ResponseEntity<ItemRequestDto> getItemRequestById(@RequestHeader(USER_HEADER) Long userId,
-            @PathVariable("requestId") Long requestId);
+                                                      @PathVariable("requestId") Long requestId);
 
     @GetMapping
     ResponseEntity<Page<ItemRequestDto>> getUsersItemRequests(@RequestHeader(USER_HEADER) Long userId,
@@ -38,8 +36,8 @@ public interface ItemRequestApi {
 
     @GetMapping
     ResponseEntity<Page<ItemRequestDto>> getOthersItemRequests(@RequestHeader(USER_HEADER) Long userId,
-                                                            @RequestParam(defaultValue = "0") @Min(0) int page,
-                                                            @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
+                                                               @RequestParam(defaultValue = "0") @Min(0) int page,
+                                                               @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
 
 
 }
