@@ -1,6 +1,5 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.request.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,9 +17,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -28,26 +29,20 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "items")
+@Table(name = "requests")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "name")
-    String name;
     @Column(name = "description")
     String description;
-    @Column(name = "is_available")
-    Boolean available;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id")
-    User owner;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id")
-    ItemRequest itemRequest;
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("created DESC")
-    List<Comment> comments;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "requestor_id")
+    User requestor;
+    @OneToMany(mappedBy = "itemRequest", orphanRemoval = true)
+    List<Item> items;
+    @Column(name = "created", insertable = false, updatable = false)
+    LocalDateTime created;
 }

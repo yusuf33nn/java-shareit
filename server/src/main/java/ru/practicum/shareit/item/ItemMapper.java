@@ -14,6 +14,7 @@ import java.util.List;
 public interface ItemMapper {
 
     @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "itemRequest", ignore = true)
     Item toCreateEntity(ItemCreateDto itemCreateDto);
 
     @Mapping(target = "owner", ignore = true)

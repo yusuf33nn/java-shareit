@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +22,6 @@ public class UserDto {
     @NotBlank
     String name;
     @Email
-    @NotNull
+    @NotBlank
     String email;
 }

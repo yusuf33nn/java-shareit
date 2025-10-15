@@ -1,7 +1,10 @@
 package ru.practicum.shareit.item.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,7 +32,9 @@ public interface ItemApi {
     ResponseEntity<ItemWithBookingsDto> getItemById(@NotNull @PathVariable("itemId") Long itemId);
 
     @GetMapping
-    ResponseEntity<List<ItemDto>> getAllItems(@RequestHeader(USER_HEADER) Long userId);
+    ResponseEntity<Page<ItemDto>> getAllItems(@RequestHeader(USER_HEADER) Long userId,
+                                              @RequestParam(defaultValue = "0") @Min(0) int page,
+                                              @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
 
     @PostMapping
     ResponseEntity<ItemDto> createItem(@RequestHeader(USER_HEADER) Long userId,
@@ -46,5 +51,7 @@ public interface ItemApi {
                                                @Valid @RequestBody CommentCreateDto commentCreateDto);
 
     @GetMapping("/search")
-    ResponseEntity<List<ItemDto>> searchItems(@RequestParam("text") String text);
+    ResponseEntity<Page<ItemDto>> searchItems(@RequestParam("text") String text,
+                                              @RequestParam(defaultValue = "0") @Min(0) int page,
+                                              @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
 }

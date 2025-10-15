@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -22,6 +25,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repo.CommentRepository;
 import ru.practicum.shareit.item.repo.ItemRepository;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -29,6 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentMapper commentMapper;
     private final BookingMapper bookingMapper;
     private final ItemRepository itemRepository;
+    private final ItemRequestService itemRequestService;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
 
@@ -70,9 +76,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getAllItems(Long userId) {
+    public Page<ItemDto> getAllItems(Long userId, int page, int size) {
         userService.findByUserId(userId);
-        return itemMapper.toDtoList(itemRepository.findAllByOwnerId(userId));
+        Pageable pageable = PageRequest.of(page, size);
+        return itemRepository.findAllByOwnerIdOrderById(userId, pageable).map(itemMapper::toDto);
     }
 
     @Override
@@ -80,6 +87,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(Long userId, ItemCreateDto itemCreateDto) {
         var owner = userService.findByUserId(userId);
         Item item = itemMapper.toCreateEntity(itemCreateDto);
+        if (itemCreateDto.getRequestId() != null) {
+            itemRequestService.findItemRequestById(itemCreateDto.getRequestId())
+                    .ifPresent(item::setItemRequest);
+        }
         item.setOwner(owner);
         return itemMapper.toDto(itemRepository.save(item));
     }
@@ -119,15 +130,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(String text) {
-        if (StringUtils.isBlank(text)) {
-            return Collections.emptyList();
-        }
-        var searchedItems = itemRepository.searchItemsByNameIgnoreCaseOrDescriptionIgnoreCase(text, text)
-                .stream()
-                .filter(Item::getAvailable)
-                .toList();
-        return itemMapper.toDtoList(searchedItems);
+    public Page<ItemDto> searchItems(String text, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return itemRepository
+                .searchItemsByAvailableIsTrueAndNameIgnoreCaseOrDescriptionIgnoreCaseOrderById(text, text, pageable)
+                .map(itemMapper::toDto);
+
     }
 
     @Override

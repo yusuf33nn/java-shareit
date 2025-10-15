@@ -10,13 +10,22 @@ CREATE TABLE IF NOT EXISTS users
     email varchar(255) not null unique
 );
 
+CREATE TABLE IF NOT EXISTS requests
+(
+    id           bigint generated always as identity primary key,
+    description  varchar(255) not null,
+    requestor_id bigint       not null references users (id),
+    created      timestamp    not null default now()
+);
+
 CREATE TABLE IF NOT EXISTS items
 (
     id           bigint generated always as identity primary key,
     name         varchar(255) not null,
     description  varchar(255) not null,
     is_available boolean      not null,
-    owner_id     bigint references users (id)
+    owner_id     bigint references users (id),
+    request_id   bigint references requests (id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings
@@ -40,3 +49,5 @@ CREATE TABLE IF NOT EXISTS comments
     author_name varchar(255) not null,
     created     timestamp    not null default now()
 );
+
+

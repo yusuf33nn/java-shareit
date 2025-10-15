@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +21,14 @@ public class ItemController implements ItemApi {
 
     private final ItemService itemService;
 
-
     @Override
     public ResponseEntity<ItemWithBookingsDto> getItemById(Long itemId) {
         return ResponseEntity.ok(itemService.getItemById(itemId));
     }
 
     @Override
-    public ResponseEntity<List<ItemDto>> getAllItems(Long userId) {
-        return ResponseEntity.ok(itemService.getAllItems(userId));
+    public ResponseEntity<Page<ItemDto>> getAllItems(Long userId, int page, int size) {
+        return ResponseEntity.ok(itemService.getAllItems(userId, page, size));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ItemController implements ItemApi {
     }
 
     @Override
-    public ResponseEntity<List<ItemDto>> searchItems(String text) {
-        return ResponseEntity.ok(itemService.searchItems(text));
+    public ResponseEntity<Page<ItemDto>> searchItems(String text, int page, int size) {
+        return ResponseEntity.ok(itemService.searchItems(text, page, size));
     }
 }

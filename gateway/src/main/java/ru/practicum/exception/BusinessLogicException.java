@@ -1,0 +1,8 @@
+package ru.practicum.exception;
+
+public class BusinessLogicException extends RuntimeException {
+
+    public BusinessLogicException(String message) {
+        super(message);
+    }
+}
