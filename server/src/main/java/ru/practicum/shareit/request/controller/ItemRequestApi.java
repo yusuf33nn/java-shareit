@@ -34,10 +34,8 @@ public interface ItemRequestApi {
                                                               @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
 
 
-    @GetMapping
+    @GetMapping("/all")
     ResponseEntity<Page<ItemRequestDto>> getOthersItemRequests(@RequestHeader(USER_HEADER) Long userId,
                                                                @RequestParam(defaultValue = "0") @Min(0) int page,
                                                                @RequestParam(defaultValue = "20") @Min(1) @Max(40) int size);
-
-
 }
