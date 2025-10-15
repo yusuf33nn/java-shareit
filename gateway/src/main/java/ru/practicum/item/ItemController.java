@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.item.dto.CommentCreateDto;
 import ru.practicum.item.dto.ItemCreateDto;
 import ru.practicum.item.dto.ItemUpdateDto;
-
-import java.util.List;
 
 import static ru.practicum.utils.Constants.USER_HEADER;
 import static ru.practicum.utils.ResponseUtils.createResponse;
