@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.controller;
 
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.BookingState;
 
 import java.util.List;
 
@@ -33,14 +33,23 @@ public interface BookingApi {
     ResponseEntity<BookingDto> getBookingInfo(@RequestHeader(USER_HEADER) Long userId,
                                               @PathVariable("bookingId") Long bookingId);
 
-    @GetMapping()
+    @GetMapping
     ResponseEntity<List<BookingDto>> getBookerAllBookingsByState(@RequestHeader(USER_HEADER) Long userId,
-                                                                 @RequestParam(name = "state", defaultValue = "ALL")
-                                                                 BookingState state);
+                                                                 @RequestParam(name = "state", defaultValue = "all")
+                                                                 String stateParam,
+                                                                 @RequestParam(name = "from", defaultValue = "0")
+                                                                 Integer from,
+                                                                 @Positive
+                                                                 @RequestParam(name = "size", defaultValue = "10")
+                                                                 Integer size);
 
     @GetMapping("/owner")
     ResponseEntity<List<BookingDto>> getOwnerAllBookingsByState(@RequestHeader(USER_HEADER) Long userId,
-                                                                @RequestParam(name = "state", defaultValue = "ALL")
-                                                                BookingState state);
-
+                                                                @RequestParam(name = "state", defaultValue = "all")
+                                                                String stateParam,
+                                                                @RequestParam(name = "from", defaultValue = "0")
+                                                                Integer from,
+                                                                @Positive
+                                                                @RequestParam(name = "size", defaultValue = "10")
+                                                                Integer size);
 }

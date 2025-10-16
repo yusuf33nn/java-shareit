@@ -31,7 +31,7 @@ public class ItemController {
 
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> getItemById(Long itemId) {
+    public ResponseEntity<Object> getItemById(@PathVariable("itemId") Long itemId) {
         var response = itemClient.getItemById(itemId);
         return createResponse(response);
     }

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS requests cascade;
 DROP TABLE IF EXISTS items cascade;
 DROP TABLE IF EXISTS comments cascade;
 DROP TABLE IF EXISTS bookings cascade;

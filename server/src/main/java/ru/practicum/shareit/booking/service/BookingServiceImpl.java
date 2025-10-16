@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -122,21 +124,24 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getBookerAllBookingsByState(Long bookerId, BookingState state) {
+    public List<BookingDto> getBookerAllBookingsByState(Long bookerId, BookingState state, int from, int size) {
         userService.findByUserId(bookerId);
         List<BookingState> bookingStatesForSearch = chooseBookingStatesForSearch(state);
-        var result = bookingRepository.getAllByBookerIdAndStateIsIn(bookerId, bookingStatesForSearch);
-        return bookingMapper.toDtoList(result);
+        Pageable pageable = PageRequest.of(from, size);
+        return bookingRepository.getAllByBookerIdAndStateIsIn(bookerId, bookingStatesForSearch, pageable)
+                .map(bookingMapper::toDto)
+                .stream().toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getOwnerAllBookingsByState(Long ownerId, BookingState state) {
+    public List<BookingDto> getOwnerAllBookingsByState(Long ownerId, BookingState state, int from, int size) {
         userService.findByUserId(ownerId);
         List<BookingState> bookingStatesForSearch = chooseBookingStatesForSearch(state);
-
-        var result = bookingRepository.findAllByOwnerIdAndStateIn(ownerId, bookingStatesForSearch);
-        return bookingMapper.toDtoList(result);
+        Pageable pageable = PageRequest.of(from, size);
+        return bookingRepository.findAllByOwnerIdAndStateIn(ownerId, bookingStatesForSearch, pageable)
+                .map(bookingMapper::toDto)
+                .stream().toList();
     }
 
     private List<BookingState> chooseBookingStatesForSearch(BookingState state) {

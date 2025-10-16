@@ -2,19 +2,29 @@ package ru.practicum.booking.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookItemRequestDto {
-	private long itemId;
+	@Positive
+	Long itemId;
+	@NotNull
 	@FutureOrPresent
-	private LocalDateTime start;
+	LocalDateTime start;
+	@NotNull
 	@Future
-	private LocalDateTime end;
+	LocalDateTime end;
 }

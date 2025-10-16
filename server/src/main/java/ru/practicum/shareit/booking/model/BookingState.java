@@ -7,5 +7,14 @@ public enum BookingState {
     WAITING,
     APPROVED,
     REJECTED,
-    ALL
+    ALL;
+
+    public static BookingState from(String stringState) {
+        for (BookingState state : values()) {
+            if (state.name().equalsIgnoreCase(stringState)) {
+                return state;
+            }
+        }
+        throw new IllegalArgumentException("Unknown state: " + stringState);
+    }
 }

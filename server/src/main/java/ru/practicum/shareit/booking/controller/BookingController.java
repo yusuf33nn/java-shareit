@@ -36,14 +36,18 @@ public class BookingController implements BookingApi {
     }
 
     @Override
-    public ResponseEntity<List<BookingDto>> getBookerAllBookingsByState(Long userId, BookingState state) {
+    public ResponseEntity<List<BookingDto>> getBookerAllBookingsByState(Long userId, String stateParam,
+                                                                        Integer from, Integer size) {
+        BookingState state = BookingState.from(stateParam);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(bookingService.getBookerAllBookingsByState(userId, state));
+                .body(bookingService.getBookerAllBookingsByState(userId, state, from, size));
     }
 
     @Override
-    public ResponseEntity<List<BookingDto>> getOwnerAllBookingsByState(Long userId, BookingState state) {
+    public ResponseEntity<List<BookingDto>> getOwnerAllBookingsByState(Long userId, String stateParam,
+                                                                       Integer from, Integer size) {
+        BookingState state = BookingState.from(stateParam);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(bookingService.getOwnerAllBookingsByState(userId, state));
+                .body(bookingService.getOwnerAllBookingsByState(userId, state, from, size));
     }
 }
