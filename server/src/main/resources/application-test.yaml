@@ -1,0 +1,33 @@
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          JpaTransactionManager: DEBUG
+        transaction: INFO
+        interceptor: TRACE
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    url: jdbc:h2:file:./db/share-it
+    username: username
+    password: password
+    driver-class-name: org.h2.Driver
+
+  sql:
+    init:
+      mode: always
+      platform: h2
+      encoding: UTF-8
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
